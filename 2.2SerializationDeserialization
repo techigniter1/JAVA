@@ -18,7 +18,7 @@ class Student implements Serializable {
 public class PartB_StudentSerialization {
     public static void main(String[] args) {
         String fileName = "student.ser";
-        Student s1 = new Student(101, "Chavi", "A");
+        Student s1 = new Student(101, "Rishabh", "A");
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
             oos.writeObject(s1);
             System.out.println("Student object serialized successfully.");
