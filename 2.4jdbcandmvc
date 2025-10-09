@@ -1,0 +1,70 @@
+import java.sql.*;
+import java.util.Scanner;
+
+class Student {
+    int StudentID; String Name; String Department; double Marks;
+    Student(int id,String name,String dept,double marks) {
+        StudentID=id; Name=name; Department=dept; Marks=marks;
+    }
+}
+
+class StudentController {
+    Connection con;
+    StudentController() throws Exception {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/yourdb","root","password");
+        con.setAutoCommit(false);
+    }
+    void addStudent(Student s) throws Exception {
+        PreparedStatement ps = con.prepareStatement("INSERT INTO Student VALUES(?,?,?,?)");
+        ps.setInt(1,s.StudentID); ps.setString(2,s.Name); ps.setString(3,s.Department); ps.setDouble(4,s.Marks);
+        ps.executeUpdate(); con.commit(); ps.close();
+    }
+    void viewStudents() throws Exception {
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Student");
+        while(rs.next()) {
+            System.out.println(rs.getInt("StudentID")+" "+rs.getString("Name")+" "+rs.getString("Department")+" "+rs.getDouble("Marks"));
+        }
+        rs.close(); stmt.close();
+    }
+    void updateStudent(Student s) throws Exception {
+        PreparedStatement ps = con.prepareStatement("UPDATE Student SET Name=?, Department=?, Marks=? WHERE StudentID=?");
+        ps.setString(1,s.Name); ps.setString(2,s.Department); ps.setDouble(3,s.Marks); ps.setInt(4,s.StudentID);
+        ps.executeUpdate(); con.commit(); ps.close();
+    }
+    void deleteStudent(int id) throws Exception {
+        PreparedStatement ps = con.prepareStatement("DELETE FROM Student WHERE StudentID=?");
+        ps.setInt(1,id); ps.executeUpdate(); con.commit(); ps.close();
+    }
+    void close() throws Exception { con.close(); }
+}
+
+public class StudentMVC {
+    public static void main(String[] args) throws Exception {
+        Scanner sc = new Scanner(System.in);
+        StudentController ctrl = new StudentController();
+        while(true) {
+            System.out.println("1.Add 2.View 3.Update 4.Delete 5.Exit");
+            int choice = sc.nextInt();
+            if(choice == 1) {
+                System.out.println("Enter ID, Name, Department, Marks:");
+                int id = sc.nextInt(); String name = sc.next(); String dept = sc.next(); double marks = sc.nextDouble();
+                ctrl.addStudent(new Student(id,name,dept,marks));
+            } else if(choice == 2) {
+                ctrl.viewStudents();
+            } else if(choice == 3) {
+                System.out.println("Enter ID to update:");
+                int id = sc.nextInt();
+                System.out.println("Enter Name, Department, Marks:");
+                String name = sc.next(); String dept = sc.next(); double marks = sc.nextDouble();
+                ctrl.updateStudent(new Student(id,name,dept,marks));
+            } else if(choice == 4) {
+                System.out.println("Enter ID to delete:");
+                int id = sc.nextInt();
+                ctrl.deleteStudent(id);
+            } else break;
+        }
+        ctrl.close(); sc.close();
+    }
+}
