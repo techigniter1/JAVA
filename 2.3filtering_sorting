@@ -1,0 +1,32 @@
+import java.util.*;
+import java.util.stream.*;
+
+class Student {
+    String name;
+    double marks;
+
+    Student(String name, double marks) {
+        this.name = name;
+        this.marks = marks;
+    }
+}
+
+public class StudentStreamDemo {
+    public static void main(String[] args) {
+        List<Student> students = Arrays.asList(
+            new Student("Alice", 80),
+            new Student("Bob", 70),
+            new Student("Charlie", 90),
+            new Student("David", 76)
+        );
+
+        // Filter students with marks > 75, sort by marks, and display names
+        List<String> topStudents = students.stream()
+            .filter(s -> s.marks > 75)
+            .sorted(Comparator.comparingDouble(s -> s.marks))
+            .map(s -> s.name)
+            .toList(); // Collect names into a List
+
+        System.out.println("Top students: " + topStudents);
+    }
+}
